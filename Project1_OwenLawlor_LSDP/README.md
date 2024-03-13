@@ -1,0 +1,17 @@
+Owen Lawlor
+# Large Scale Data Processing: Project 1
+1. For each trial, my string is: this_is_a_bitcoin_block_of_81633328
+    a. For k = 2: xS = 1174895876this_is_a_bitcoin_block_of_81633328; hash value = 00210dfb201eaca7b0eb6830f541bde15343db26b944c6eb15820d43d4a89e74; Time elapsed = 5s; number of trials = 1,000
+    b. For k = 3: xS = 827096357this_is_a_bitcoin_block_of_81633328, hash value = 00056d45178be4b168d06f04d2ace68e3fa404d58e70b4978d08bdf8462f43cc, Time elapsed = 5s; number of trials = 10,000
+    c. For k = 4: xS = 2072346514this_is_a_bitcoin_block_of_81633328, hash value = 000054a44efd548e57206d654cb632c897dbf4f068b426aa0fc464a32160599f, Time elapsed = 5s; number of trials = 40,000
+    d. For k = 5: xS = 1983562208this_is_a_bitcoin_block_of_81633328, hash value = 00000601c352f3e24776ce00405b1d1da523822f0560dd61ce94dba57d86ee09, Time elapsed = 8s; number of trials = 1,000,000
+    e. For k = 6: xS = 427613805this_is_a_bitcoin_block_of_81633328, hash value = 000000be471f431fb675ad10fd27089c810cb44e15f37a92f56a74b7cab97602, Time elapsed = 51s; number of trials = 20,000,000
+
+2. 
+    a. Using GCP, with k = 7: xS = 759103323this_is_a_bitcoin_block_of_81633328; hash value = 00000002ca6b35bd1bbf2c921cc9258d21b4c58505a79a2952041615a796e1d0; Time elapsed = 269s; number of trials = 100,000,000.
+    b. For GCP, my cluster configuration had a machine type: n2-standard-2; GPUs: 0; disk space: 250 gb for master node, 125 for each of two worker nodes; memory: 12.8 gb available, about half of memory was used while running job; core:fs.gs.block.size: 134217728.
+    c. My process for deciding the number of trials was that, with limited exception, it seemed that each time k increased by 1, the number of trials seemed to need another signicant digit to find a nonce and hash value for each string. Initially, with some of the first runs using low k values, I attempted to add a low end estimate for the number of trials I needed for each additional k. What I discovered was that almost each k needed about some number of trials that followed this format: (some integer from 1-9) * 10^(k+1). With this formula, I was able to find a nonce for each k difficulty, and for each k, except for k = 4, trying to using a number below 10^(k+1) for the number of trials resulted in failure. 
+
+3.
+    a. New Line: val nonce = sc.range(1, trials + 1)
+    b. For k = 3 and k = 4, the randomized approach yielded a runtime of 5s, and 6s for the sequential approach. For k = 2, the runtime was the same but I had to use more trials for the sequential method. For k = 5, the runtimes were both 8s. For k = 6, the runtime was 5 seconds slower for the sequential approach than the randomized approach if the same number of trials were used, up from 51s to 56s. However, I was also able to try another run using the sequential approach with only 10 million trials instead of 20 million (10 million was unsuccessful when I tried the randomized approach before), and I achieved a much lower runtime of 32 seconds. Thus, it appears that, for most trials, especially with lower k values, the randomized approach is superior. Although, in cases with a very large number of trials, the sequential approach may be more efficient, since the randomized approach may unevenly/uniformly distribute the nonce values amongst the worker nodes, leading to a longer runtime.
